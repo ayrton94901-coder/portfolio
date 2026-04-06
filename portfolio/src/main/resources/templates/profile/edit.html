@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>プロフィール編集</title>
+  <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+
+<div class="container" style="max-width:720px;margin:24px auto;">
+  <h1>プロフィール編集</h1>
+  
+  <!-- アバター変更（この画面だけで変更できる） -->
+<div style="margin:16px 0; padding:12px; border:1px solid #e5e7eb; border-radius:12px;">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <img th:src="${user.avatarFilename != null}
+                  ? @{'/uploads/' + ${user.avatarFilename}}
+                  : @{/default-avatar.png}"
+         alt="avatar"
+         style="width:88px;height:88px;border-radius:999px;object-fit:cover;">
+    <div>
+      <div style="font-weight:600;">アバター画像</div>
+      <div style="color:#6b7280; font-size:12px;">画像を選んで更新できます</div>
+    </div>
+  </div>
+
+  <form th:action="@{/profile/avatar}" method="post" enctype="multipart/form-data" style="margin-top:12px;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <input type="file" name="avatar" accept="image/*" required>
+    <button type="submit" style="margin-left:8px;">アバター更新</button>
+  </form>
+</div>
+
+  <form th:action="@{/profile/edit}" method="post" th:object="${profileEditForm}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+    <div style="margin:12px 0;">
+      <label>表示名</label>
+      <input type="text" th:field="*{displayName}" style="width:100%;">
+      <div class="text-danger" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div>
+    </div>
+
+    <div style="margin:12px 0;">
+      <label>ハンドル</label>
+      <input type="text" th:field="*{handle}" style="width:100%;">
+      <div class="text-danger" th:if="${#fields.hasErrors('handle')}" th:errors="*{handle}"></div>
+    </div>
+    
+    <div class="mb-3">
+  <label class="form-label">自己紹介</label>
+  <textarea class="form-control profile-bio-input"
+          rows="6"
+          th:field="*{bio}"
+          placeholder="好きな映画、よく観るジャンル、ひとこと…"></textarea>
+  <div class="text-danger small mt-1"
+       th:if="${#fields.hasErrors('bio')}"
+       th:errors="*{bio}"></div>
+</div>
+
+    <button type="submit">保存</button>
+    <a th:href="@{/profile}">キャンセル</a>
+  </form>
+</div>
+
+</body>
+</html>

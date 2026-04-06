@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- 通常ページ用 -->
+  <nav th:fragment="appHeader(keyword)" class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+    <div class="container app-container">
+      <a class="navbar-brand" th:href="@{/posts}">CineShare</a>
+
+      <!-- 検索（必要な画面だけ表示） -->
+      <form class="d-none d-lg-flex flex-grow-1 mx-lg-4"
+            th:if="${keyword != null}"
+            th:action="@{/posts}" method="get">
+        <input class="form-control rounded-pill"
+               type="text"
+               name="keyword"
+               th:value="${keyword}"
+               placeholder="キャプションを検索...">
+      </form>
+
+      <div class="d-flex gap-2 align-items-center">
+        <a class="btn btn-outline-secondary" th:href="@{/posts}">ホーム</a>
+        <a class="btn btn-primary" th:href="@{/posts/new}">投稿</a>
+        <a class="btn btn-outline-primary" th:href="@{/profile}">プロフィール</a>
+
+        <form th:action="@{/logout}" method="post" class="d-inline">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <button class="btn btn-outline-danger" type="submit">ログアウト</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- スマホ用検索 -->
+    <div class="container app-container py-2 d-lg-none" th:if="${keyword != null}">
+      <form th:action="@{/posts}" method="get">
+        <input class="form-control rounded-pill"
+               type="text"
+               name="keyword"
+               th:value="${keyword}"
+               placeholder="キャプションを検索...">
+      </form>
+    </div>
+  </nav>
+
+  <!-- 認証ページ用（ログイン/新規登録）: ロゴだけ -->
+  <nav th:fragment="authHeader" class="navbar bg-white border-bottom sticky-top">
+    <div class="container app-container">
+      <a class="navbar-brand" th:href="@{/posts}">CineShare</a>
+    </div>
+  </nav>
+</body>
+</html>

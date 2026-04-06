@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${user.email} + ' | CineShare'">User | CineShare</title>
+  <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="/posts">
+      <span class="logo-mark">🎞</span>
+      <span class="logo-text">CineShare</span>
+    </a>
+
+    <form class="search" method="get" action="/posts">
+      <input class="search-input" name="keyword" placeholder="映画やユーザーを検索…" />
+    </form>
+
+    <nav class="gnav">
+      <a class="gnav-link" href="/posts">ホーム</a>
+      <a class="gnav-link" href="/posts/new">投稿</a>
+      <a class="gnav-link" href="/profile">プロフィール</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="hero" style="margin-top: 10px;">
+    <h1 class="hero-title" th:text="${user.email}">user@example.com</h1>
+    <p class="hero-sub"
+       th:text="'@' + ${#strings.substringBefore(user.email,'@')}">@user</p>
+  </div>
+
+  <h2 style="margin: 10px 0 12px;">投稿</h2>
+
+  <p class="empty" th:if="${posts == null or #lists.isEmpty(posts)}">まだ投稿がありません</p>
+
+  <section class="feed" th:if="${posts != null and !#lists.isEmpty(posts)}">
+    <div class="feed-card" th:each="p : ${posts}">
+      <!-- 画像クリックで詳細へ -->
+      <div class="card-link"
+           role="link"
+           tabindex="0"
+           th:data-href="@{/posts/{id}(id=${p.id})}">
+        <div class="media">
+          <img th:src="@{'/uploads/' + ${p.imageFilename}}" alt="image">
+          <div class="media-title">
+            <p class="title" th:text="${p.caption}">タイトル</p>
+            <p class="subtitle">投稿</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="feed-actions">
+        <a class="action" href="/posts" title="戻る">
+          <span class="count">← 戻る</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // カードクリックで詳細へ（リンククリック等は邪魔しない）
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return;
+    const link = e.target.closest('.card-link[data-href]');
+    if (!link) return;
+    location.href = link.dataset.href;
+  });
+</script>
+
+</body>
+</html>

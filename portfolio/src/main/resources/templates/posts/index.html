@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Posts</title>
+  <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="/posts">
+      <span class="logo-mark">🎞</span>
+      <span class="logo-text">CineShare</span>
+    </a>
+
+    <form class="search" method="get" action="/posts">
+  <input type="hidden" name="tag"
+         th:if="${tag != null and !#strings.isEmpty(tag)}"
+         th:value="${tag}">
+  <input class="search-input" name="keyword"
+         th:value="${keyword}"
+         placeholder="映画やユーザーを検索…" />
+</form>
+
+    <nav class="gnav">
+      <a class="gnav-link is-active" href="/posts">ホーム</a>
+      <a class="gnav-link" href="/posts/new">投稿</a>
+      <a class="gnav-link" href="/profile">プロフィール</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <h1 class="hero-title">おすすめ映画フィード</h1>
+    <p class="hero-sub">映画好きのみんながおすすめする作品をチェックしよう</p>
+  </div>
+
+  <p th:if="${posts == null or #lists.isEmpty(posts)}">まだ投稿がありません</p>
+
+  <section class="feed" th:if="${posts != null and !#lists.isEmpty(posts)}">
+  <div th:each="p : ${posts}">
+    <div th:insert="~{fragments/postCard :: postCard(p=${p}, showDate=${true})}"></div>
+  </div>
+</section>
+</main>
+<script>
+  document.addEventListener('click', (e) => {
+    // いいね等は無視
+    if (e.target.closest('.feed-actions')) return;
+
+    // 画像をクリックしたら詳細へ
+    const img = e.target.closest('img.post-image[data-href]');
+    if (img) {
+      location.href = img.dataset.href;
+      return;
+    }
+
+    // （任意）画像以外のタイトル部分でも飛ばしたいなら、ここで card-link も拾う
+    const link = e.target.closest('.card-link[data-href]');
+    if (link) {
+      location.href = link.dataset.href;
+    }
+  });
+</script>
+<script>
+  async function sharePost(btn) {
+    const url = new URL(btn.dataset.shareUrl, location.origin).toString();
+    const title = btn.dataset.shareTitle || 'CineShare';
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        alert('リンクをコピーしました');
+      }
+    } catch (e) {
+      // キャンセル含むので握りつぶしOK
+      console.log(e);
+    }
+  }
+</script>
+</body>
+</html>

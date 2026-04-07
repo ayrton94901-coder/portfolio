@@ -1,159 +1,149 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title th:text="${post.movieTitle}">Post</title>
-  <link rel="stylesheet" th:href="@{/app.css}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${post.movieTitle}">Post</title>
+	<link rel="stylesheet" th:href="@{/app.css}">
 </head>
+
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a class="logo" href="/posts">
-      <span class="logo-mark">🎞</span>
-      <span class="logo-text">CineShare</span>
-    </a>
+	<header class="site-header">
+		<div class="header-inner">
+			<a class="logo" href="/posts">
+				<span class="logo-mark">🎞</span>
+				<span class="logo-text">CineShare</span>
+			</a>
 
-    <form class="search" method="get" action="/posts">
-      <input class="search-input" name="keyword" placeholder="映画やユーザーを検索…" />
-    </form>
+			<form class="search" method="get" action="/posts">
+				<input class="search-input" name="keyword" placeholder="映画やユーザーを検索…" />
+			</form>
 
-    <nav class="gnav">
-      <a class="gnav-link" href="/posts">ホーム</a>
-      <a class="gnav-link" href="/posts/new">投稿</a>
-      <a class="gnav-link" href="/profile">プロフィール</a>
-    </nav>
-  </div>
-</header>
+			<nav class="gnav">
+				<a class="gnav-link" href="/posts">ホーム</a>
+				<a class="gnav-link" href="/posts/new">投稿</a>
+				<a class="gnav-link" href="/profile">プロフィール</a>
+			</nav>
+		</div>
+	</header>
 
-<main class="container">
-  <section class="feed">
-    <div class="feed-card">
+	<main class="container">
+		<section class="feed">
+			<div class="feed-card">
 
-      <div class="feed-header">
-        <div class="user-mini">
-          <img class="avatar"
-     th:src="${post.user.avatarFilename != null}
+				<div class="feed-header">
+					<div class="user-mini">
+						<img class="avatar" th:src="${post.user.avatarFilename != null}
                ? @{'/uploads/' + ${post.user.avatarFilename}}
-               : @{/default-avatar.png}"
-     alt="avatar">
-          <div class="user-lines">
-            <div class="user-name" th:text="${post.user.displayName}">user</div>
-<div class="user-handle" th:text="'@' + ${post.user.handle}">@user</div>
-          </div>
-        </div>
+               : @{/default-avatar.png}" alt="avatar">
+						<div class="user-lines">
+							<div class="user-name" th:text="${post.user.displayName}">user</div>
+							<div class="user-handle" th:text="'@' + ${post.user.handle}">@user</div>
+						</div>
+					</div>
 
-        <!-- createdAtがLocalDateTimeなら #temporals で整形できます -->
-        <div class="post-date"
-             th:text="${#temporals.format(post.createdAt, 'yyyy年M月d日 HH:mm')}">2026年3月25日 19:30</div>
-      </div>
+					<!-- createdAtがLocalDateTimeなら #temporals で整形できます -->
+					<div class="post-date" th:text="${#temporals.format(post.createdAt, 'yyyy年M月d日 HH:mm')}">2026年3月25日
+						19:30</div>
+				</div>
 
-      <div class="media">
-        <img th:src="@{'/uploads/' + ${post.imageFilename}}" alt="image">
-        <div class="media-title">
-         <p class="title" th:text="${post.movieTitle}">映画タイトル</p>
-<p class="subtitle" th:text="${post.director + ' / ' + post.releaseYear}">監督 / 年</p>
-        </div>
-      </div>
+				<div class="media">
+					<img th:src="@{'/uploads/' + ${post.imageFilename}}" alt="image">
+					<div class="media-title">
+						<p class="title" th:text="${post.movieTitle}">映画タイトル</p>
+						<p class="subtitle" th:text="${post.director + ' / ' + post.releaseYear}">監督 / 年</p>
+					</div>
+				</div>
 
-      <div class="feed-body">
-        <!-- 星は今は見た目だけ -->
-        <div class="rating-row" th:if="${post.rating != null}">
-  <div class="stars" aria-label="rating">
-    <span class="star" th:classappend="${post.rating >= 1} ? ' is-on' : ''">★</span>
-    <span class="star" th:classappend="${post.rating >= 2} ? ' is-on' : ''">★</span>
-    <span class="star" th:classappend="${post.rating >= 3} ? ' is-on' : ''">★</span>
-    <span class="star" th:classappend="${post.rating >= 4} ? ' is-on' : ''">★</span>
-    <span class="star" th:classappend="${post.rating >= 5} ? ' is-on' : ''">★</span>
-  </div>
-  <div class="rating-num" th:text="${post.rating} + '.0'">5.0</div>
-</div>
+				<div class="feed-body">
+					<!-- 星は今は見た目だけ -->
+					<div class="rating-row" th:if="${post.rating != null}">
+						<div class="stars" aria-label="rating">
+							<span class="star" th:classappend="${post.rating >= 1} ? ' is-on' : ''">★</span>
+							<span class="star" th:classappend="${post.rating >= 2} ? ' is-on' : ''">★</span>
+							<span class="star" th:classappend="${post.rating >= 3} ? ' is-on' : ''">★</span>
+							<span class="star" th:classappend="${post.rating >= 4} ? ' is-on' : ''">★</span>
+							<span class="star" th:classappend="${post.rating >= 5} ? ' is-on' : ''">★</span>
+						</div>
+						<div class="rating-num" th:text="${post.rating} + '.0'">5.0</div>
+					</div>
 
-        <p class="feed-caption" th:text="${post.caption}">本文</p>
+					<p class="feed-caption" th:text="${post.caption}">本文</p>
 
-        <div class="chips" th:if="${post.tags != null and !#sets.isEmpty(post.tags)}">
-  <span class="chip" th:each="t : ${post.tags}" th:text="'#' + ${t.name}">#tag</span>
-</div>
-      </div>
+					<div class="chips" th:if="${post.tags != null and !#sets.isEmpty(post.tags)}">
+						<span class="chip" th:each="t : ${post.tags}" th:text="'#' + ${t.name}">#tag</span>
+					</div>
+				</div>
 
-     <div class="feed-actions">
-  <form th:action="@{/posts/{postId}/like(postId=${post.id})}"
-        method="post"
-        class="like-form"
-        onclick="event.stopPropagation();">
-    <button class="like-btn"
-            type="submit"
-            onclick="event.stopPropagation();"
-            th:classappend="${likedByMe} ? ' is-liked' : ''">
-      <span class="like-icon" th:text="${likedByMe} ? '♥' : '♡'">♡</span>
-      <span class="count" th:text="${likeCount}">0</span>
-    </button>
-  </form>
+				<div class="feed-actions">
+					<form th:action="@{/posts/{postId}/like(postId=${post.id})}" method="post" class="like-form"
+						onclick="event.stopPropagation();">
+						<button class="like-btn" type="submit" onclick="event.stopPropagation();"
+							th:classappend="${likedByMe} ? ' is-liked' : ''">
+							<span class="like-icon" th:text="${likedByMe} ? '♥' : '♡'">♡</span>
+							<span class="count" th:text="${likeCount}">0</span>
+						</button>
+					</form>
 
-  <a class="action" href="#comments">
-    <span class="count">💬 <span th:text="${comments.size()}">0</span></span>
-  </a>
+					<a class="action" href="#comments">
+						<span class="count">💬 <span th:text="${comments.size()}">0</span></span>
+					</a>
 
-  <button type="button" class="action"
-        th:attr="data-share-url=@{/posts/{id}(id=${post.id})}, data-share-title=${post.movieTitle}"
-        onclick="sharePost(this)"
-        style="background:none;border:none;padding:0;cursor:pointer;">
-  <span class="count">↗ シェア</span>
-</button>
-</div>
+					<button type="button" class="action"
+						th:attr="data-share-url=@{/posts/{id}(id=${post.id})}, data-share-title=${post.movieTitle}"
+						onclick="sharePost(this)" style="background:none;border:none;padding:0;cursor:pointer;">
+						<span class="count">↗ シェア</span>
+					</button>
+				</div>
 
-      <div class="comment-area" id="comments">
-        <h2 class="comment-title">コメント (<span th:text="${comments.size()}">0</span>)</h2>
+				<div class="comment-area" id="comments">
+					<h2 class="comment-title">コメント (<span th:text="${comments.size()}">0</span>)</h2>
 
-        <form class="comment-form"
-              th:action="@{/posts/{postId}/comments(postId=${post.id})}"
-              method="post"
-              th:object="${commentForm}">
-          <textarea class="comment-input"
-                    th:field="*{content}"
-                    placeholder="コメントを入力…"></textarea>
-          <button class="comment-btn" type="submit">コメントする</button>
-        </form>
+					<form class="comment-form" th:action="@{/posts/{postId}/comments(postId=${post.id})}" method="post"
+						th:object="${commentForm}">
+						<textarea class="comment-input" th:field="*{content}" placeholder="コメントを入力…"></textarea>
+						<button class="comment-btn" type="submit">コメントする</button>
+					</form>
 
-        <div class="comment-list">
-          <div class="comment-item" th:each="c : ${comments}">
-            <div class="comment-head">
-              <img class="avatar sm"
-     th:src="${c.user.avatarFilename != null}
+					<div class="comment-list">
+						<div class="comment-item" th:each="c : ${comments}">
+							<div class="comment-head">
+								<img class="avatar sm" th:src="${c.user.avatarFilename != null}
                ? @{'/uploads/' + ${c.user.avatarFilename}}
-               : @{/default-avatar.png}"
-     alt="avatar">
-              <div class="comment-meta">
-                <div class="comment-name" th:text="${c.user.displayName}">user</div>
-                <div class="comment-date"
-                     th:text="${#temporals.format(c.createdAt, 'M月d日')}">3月25日</div>
-              </div>
-            </div>
-            <p class="comment-body" th:text="${c.content}">comment</p>
-          </div>
-        </div>
+               : @{/default-avatar.png}" alt="avatar">
+								<div class="comment-meta">
+									<div class="comment-name" th:text="${c.user.displayName}">user</div>
+									<div class="comment-date" th:text="${#temporals.format(c.createdAt, 'M月d日')}">3月25日
+									</div>
+								</div>
+							</div>
+							<p class="comment-body" th:text="${c.content}">comment</p>
+						</div>
+					</div>
 
-      </div>
+				</div>
 
-    </div>
-  </section>
-</main>
-<script>
-  async function sharePost(btn) {
-    const url = new URL(btn.dataset.shareUrl, location.origin).toString();
-    const title = btn.dataset.shareTitle || 'CineShare';
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        alert('リンクをコピーしました');
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-</script>
+			</div>
+		</section>
+	</main>
+	<script>
+		async function sharePost(btn) {
+			const url = new URL(btn.dataset.shareUrl, location.origin).toString();
+			const title = btn.dataset.shareTitle || 'CineShare';
+			try {
+				if (navigator.share) {
+					await navigator.share({title, url});
+				} else {
+					await navigator.clipboard.writeText(url);
+					alert('リンクをコピーしました');
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		}
+	</script>
 </body>
+
 </html>

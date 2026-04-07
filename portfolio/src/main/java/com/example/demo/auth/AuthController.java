@@ -13,49 +13,48 @@ import com.example.demo.user.UserRepository;
 
 import jakarta.validation.Valid;
 
-
 @Controller
 public class AuthController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+	public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
-    @GetMapping("/login")
-    public String login() {
-        return "auth/login";
-    }
+	@GetMapping("/login")
+	public String login() {
+		return "auth/login";
+	}
 
-    @GetMapping("/signup")
-    public String signup(Model model) {
-        model.addAttribute("signupForm", new SignupForm());
-        return "auth/signup";
-    }
+	@GetMapping("/signup")
+	public String signup(Model model) {
+		model.addAttribute("signupForm", new SignupForm());
+		return "auth/signup";
+	}
 
-    @PostMapping("/signup")
-    public String signupSubmit(@Valid SignupForm signupForm, BindingResult result, Model model) {
-        if (userRepository.existsByUsername(signupForm.getEmail())) {
-            result.rejectValue("email", "email.duplicate", "そのメールアドレスは既に登録されています");
-        }
-        if (userRepository.existsByHandle(signupForm.getHandle())) {
-            result.rejectValue("handle", "handle.duplicate", "そのユーザー名は既に使われています");
-        }
+	@PostMapping("/signup")
+	public String signupSubmit(@Valid SignupForm signupForm, BindingResult result, Model model) {
+		if (userRepository.existsByUsername(signupForm.getEmail())) {
+			result.rejectValue("email", "email.duplicate", "そのメールアドレスは既に登録されています");
+		}
+		if (userRepository.existsByHandle(signupForm.getHandle())) {
+			result.rejectValue("handle", "handle.duplicate", "そのユーザー名は既に使われています");
+		}
 
-        if (result.hasErrors()) {
-            return "auth/signup";
-        }
+		if (result.hasErrors()) {
+			return "auth/signup";
+		}
 
-        User user = new User();
-        user.setEmail(signupForm.getEmail());
-        user.setHandle(signupForm.getHandle()); // ★追加
-        user.setPassword(passwordEncoder.encode(signupForm.getPassword()));
-        user.setDisplayName(signupForm.getDisplayName());
+		User user = new User();
+		user.setEmail(signupForm.getEmail());
+		user.setHandle(signupForm.getHandle()); // ★追加
+		user.setPassword(passwordEncoder.encode(signupForm.getPassword()));
+		user.setDisplayName(signupForm.getDisplayName());
 
-        userRepository.save(user);
-        return "redirect:/login";
-    }
+		userRepository.save(user);
+		return "redirect:/login";
+	}
 }

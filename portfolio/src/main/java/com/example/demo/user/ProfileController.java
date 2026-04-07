@@ -28,142 +28,145 @@ import jakarta.validation.Valid;
 @Controller
 public class ProfileController {
 
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final StorageService storageService;
-    private final CommentRepository commentRepository;
-    private final PostLikeRepository likeRepository;
-    private final FollowRepository followRepository;
+	private final PostRepository postRepository;
+	private final UserRepository userRepository;
+	private final StorageService storageService;
+	private final CommentRepository commentRepository;
+	private final PostLikeRepository likeRepository;
+	private final FollowRepository followRepository;
 
-    public ProfileController(PostRepository postRepository,
-            UserRepository userRepository,
-            StorageService storageService,
-            CommentRepository commentRepository,
-            PostLikeRepository likeRepository,
-            FollowRepository followRepository) {
-this.postRepository = postRepository;
-this.userRepository = userRepository;
-this.storageService = storageService;
-this.commentRepository = commentRepository;
-this.likeRepository = likeRepository;
-this.followRepository = followRepository;
-}
+	public ProfileController(PostRepository postRepository, UserRepository userRepository,
+			StorageService storageService, CommentRepository commentRepository, PostLikeRepository likeRepository,
+			FollowRepository followRepository) {
+		this.postRepository = postRepository;
+		this.userRepository = userRepository;
+		this.storageService = storageService;
+		this.commentRepository = commentRepository;
+		this.likeRepository = likeRepository;
+		this.followRepository = followRepository;
+	}
 
-    @GetMapping("/profile")
-    public String profile(@AuthenticationPrincipal User user, Model model) {
-        if (user == null) return "redirect:/login";
+	@GetMapping("/profile")
+	public String profile(@AuthenticationPrincipal User user, Model model) {
+		if (user == null)
+			return "redirect:/login";
 
-        User me = userRepository.findById(user.getId()).orElse(null);
-        if (me == null) return "redirect:/login";
+		User me = userRepository.findById(user.getId()).orElse(null);
+		if (me == null)
+			return "redirect:/login";
 
-        List<Post> myPosts = postRepository.findByUserIdWithUserAndTagsOrderByCreatedAtDesc(me.getId());
+		List<Post> myPosts = postRepository.findByUserIdWithUserAndTagsOrderByCreatedAtDesc(me.getId());
 
-        List<Long> postIds = myPosts.stream().map(Post::getId).toList();
+		List<Long> postIds = myPosts.stream().map(Post::getId).toList();
 
-        // Like件数
-        Map<Long, Long> likeCountMap = new HashMap<>();
-        if (!postIds.isEmpty()) {
-            for (PostLike pl : likeRepository.findByPostIdIn(postIds)) {
-                Long pid = pl.getPost().getId();
-                likeCountMap.put(pid, likeCountMap.getOrDefault(pid, 0L) + 1L);
-            }
-        }
+		// Like件数
+		Map<Long, Long> likeCountMap = new HashMap<>();
+		if (!postIds.isEmpty()) {
+			for (PostLike pl : likeRepository.findByPostIdIn(postIds)) {
+				Long pid = pl.getPost().getId();
+				likeCountMap.put(pid, likeCountMap.getOrDefault(pid, 0L) + 1L);
+			}
+		}
 
-        // 自分がLike済みか
-        Set<Long> likedPostIds = new HashSet<>();
-        if (!postIds.isEmpty()) {
-            for (PostLike pl : likeRepository.findByPostIdInAndUserId(postIds, me.getId())) {
-                likedPostIds.add(pl.getPost().getId());
-            }
-        }
+		// 自分がLike済みか
+		Set<Long> likedPostIds = new HashSet<>();
+		if (!postIds.isEmpty()) {
+			for (PostLike pl : likeRepository.findByPostIdInAndUserId(postIds, me.getId())) {
+				likedPostIds.add(pl.getPost().getId());
+			}
+		}
 
-        // コメント件数
-        Map<Long, Long> commentCountMap = new HashMap<>();
-        if (!postIds.isEmpty()) {
-            for (Object[] row : commentRepository.countByPostIds(postIds)) {
-                Long pid = (Long) row[0];
-                Long cnt = (Long) row[1];
-                commentCountMap.put(pid, cnt);
-            }
-        }
+		// コメント件数
+		Map<Long, Long> commentCountMap = new HashMap<>();
+		if (!postIds.isEmpty()) {
+			for (Object[] row : commentRepository.countByPostIds(postIds)) {
+				Long pid = (Long) row[0];
+				Long cnt = (Long) row[1];
+				commentCountMap.put(pid, cnt);
+			}
+		}
 
-        model.addAttribute("user", me);
-        model.addAttribute("myPosts", myPosts);
-        model.addAttribute("isMe", true);
-        
-        long followerCount = followRepository.countByFolloweeId(me.getId());
-        long followingCount = followRepository.countByFollowerId(me.getId());
+		model.addAttribute("user", me);
+		model.addAttribute("myPosts", myPosts);
+		model.addAttribute("isMe", true);
 
-        model.addAttribute("followerCount", followerCount);
-        model.addAttribute("followingCount", followingCount);
-        model.addAttribute("isFollowing", false); // 自分ページなので固定でOK
+		long followerCount = followRepository.countByFolloweeId(me.getId());
+		long followingCount = followRepository.countByFollowerId(me.getId());
 
-        // フラグメント（postCard.html）が参照する変数
-        model.addAttribute("likeCountMap", likeCountMap);
-        model.addAttribute("likedPostIds", likedPostIds);
-        model.addAttribute("commentCountMap", commentCountMap);
+		model.addAttribute("followerCount", followerCount);
+		model.addAttribute("followingCount", followingCount);
+		model.addAttribute("isFollowing", false); // 自分ページなので固定でOK
 
-        return "profile/show";
-    }
+		// フラグメント（postCard.html）が参照する変数
+		model.addAttribute("likeCountMap", likeCountMap);
+		model.addAttribute("likedPostIds", likedPostIds);
+		model.addAttribute("commentCountMap", commentCountMap);
 
-    @GetMapping("/profile/edit")
-    public String edit(@AuthenticationPrincipal User user, Model model) {
-        if (user == null) return "redirect:/login";
+		return "profile/show";
+	}
 
-        User me = userRepository.findById(user.getId()).orElse(null);
-        if (me == null) return "redirect:/login";
+	@GetMapping("/profile/edit")
+	public String edit(@AuthenticationPrincipal User user, Model model) {
+		if (user == null)
+			return "redirect:/login";
 
-        ProfileEditForm form = new ProfileEditForm();
-        form.setDisplayName(me.getDisplayName());
-        form.setHandle(me.getHandle());
-        form.setBio(me.getBio());
+		User me = userRepository.findById(user.getId()).orElse(null);
+		if (me == null)
+			return "redirect:/login";
 
-        model.addAttribute("profileEditForm", form);
-        model.addAttribute("user", me);
-        return "profile/edit";
-    }
+		ProfileEditForm form = new ProfileEditForm();
+		form.setDisplayName(me.getDisplayName());
+		form.setHandle(me.getHandle());
+		form.setBio(me.getBio());
 
-    @PostMapping("/profile/edit")
-    public String update(@AuthenticationPrincipal User user,
-                         @Valid ProfileEditForm profileEditForm,
-                         BindingResult result,
-                         Model model) {
-        if (user == null) return "redirect:/login";
+		model.addAttribute("profileEditForm", form);
+		model.addAttribute("user", me);
+		return "profile/edit";
+	}
 
-        if (result.hasErrors()) {
-            model.addAttribute("profileEditForm", profileEditForm);
-            
-            return "profile/edit";
-        }
+	@PostMapping("/profile/edit")
+	public String update(@AuthenticationPrincipal User user, @Valid ProfileEditForm profileEditForm,
+			BindingResult result, Model model) {
+		if (user == null)
+			return "redirect:/login";
 
-        // DBのユーザーを更新
-        User me = userRepository.findById(user.getId()).orElse(null);
-        if (me == null) return "redirect:/login";
+		if (result.hasErrors()) {
+			model.addAttribute("profileEditForm", profileEditForm);
 
-        me.setDisplayName(profileEditForm.getDisplayName());
-        me.setHandle(profileEditForm.getHandle());
-        me.setBio(profileEditForm.getBio());
-        userRepository.save(me);
+			return "profile/edit";
+		}
 
-        return "redirect:/profile";
-    }
-    
-    @PostMapping("/profile/avatar")
-    public String updateAvatar(@AuthenticationPrincipal User user,
-                               @RequestParam("avatar") MultipartFile avatarFile) {
-        if (user == null) return "redirect:/login";
-        if (avatarFile == null || avatarFile.isEmpty()) return "redirect:/profile";
+		// DBのユーザーを更新
+		User me = userRepository.findById(user.getId()).orElse(null);
+		if (me == null)
+			return "redirect:/login";
 
-        // 画像を保存（postsの画像保存と同じ仕組みを流用）
-        String filename = storageService.store(avatarFile);
+		me.setDisplayName(profileEditForm.getDisplayName());
+		me.setHandle(profileEditForm.getHandle());
+		me.setBio(profileEditForm.getBio());
+		userRepository.save(me);
 
-        // DB更新
-        User me = userRepository.findById(user.getId()).orElse(null);
-        if (me == null) return "redirect:/login";
+		return "redirect:/profile";
+	}
 
-        me.setAvatarFilename(filename);
-        userRepository.save(me);
+	@PostMapping("/profile/avatar")
+	public String updateAvatar(@AuthenticationPrincipal User user, @RequestParam("avatar") MultipartFile avatarFile) {
+		if (user == null)
+			return "redirect:/login";
+		if (avatarFile == null || avatarFile.isEmpty())
+			return "redirect:/profile";
 
-        return "redirect:/profile/edit";
-    }
+		// 画像を保存（postsの画像保存と同じ仕組みを流用）
+		String filename = storageService.store(avatarFile);
+
+		// DB更新
+		User me = userRepository.findById(user.getId()).orElse(null);
+		if (me == null)
+			return "redirect:/login";
+
+		me.setAvatarFilename(filename);
+		userRepository.save(me);
+
+		return "redirect:/profile/edit";
+	}
 }

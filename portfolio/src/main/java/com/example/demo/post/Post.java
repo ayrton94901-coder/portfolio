@@ -22,71 +22,118 @@ import jakarta.persistence.PrePersist;
 @Entity
 public class Post {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    /** 感想本文（既存のcaptionを流用） */
-    @Column(columnDefinition = "TEXT")
-    private String caption;
+	/** 感想本文（既存のcaptionを流用） */
+	@Column(columnDefinition = "TEXT")
+	private String caption;
 
-    /** uploads/ に保存したファイル名 */
-    private String imageFilename;
+	/** uploads/ に保存したファイル名 */
+	private String imageFilename;
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-    // 映画情報
-    private String movieTitle;
-    private String director;
-    private Integer releaseYear; // 公開年
-    private Integer rating;      // 1〜5
+	// 映画情報
+	private String movieTitle;
+	private String director;
+	private Integer releaseYear; // 公開年
+	private Integer rating; // 1〜5
 
-    @ManyToMany
-    @JoinTable(
-        name = "post_tags",
-        joinColumns = @JoinColumn(name = "post_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> tags = new LinkedHashSet<>();
+	@ManyToMany
+	@JoinTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	private Set<Tag> tags = new LinkedHashSet<>();
 
-    // 投稿者
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+	// 投稿者
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-    @PrePersist
-    public void prePersist() {
-        if (createdAt == null) createdAt = LocalDateTime.now();
-    }
+	@PrePersist
+	public void prePersist() {
+		if (createdAt == null)
+			createdAt = LocalDateTime.now();
+	}
 
-    // getters/setters（既存のに加えて追加分）
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+	// getters/setters（既存のに加えて追加分）
+	public Long getId() {
+		return id;
+	}
 
-    public String getCaption() { return caption; }
-    public void setCaption(String caption) { this.caption = caption; }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getImageFilename() { return imageFilename; }
-    public void setImageFilename(String imageFilename) { this.imageFilename = imageFilename; }
+	public String getCaption() {
+		return caption;
+	}
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+	public void setCaption(String caption) {
+		this.caption = caption;
+	}
 
-    public String getMovieTitle() { return movieTitle; }
-    public void setMovieTitle(String movieTitle) { this.movieTitle = movieTitle; }
+	public String getImageFilename() {
+		return imageFilename;
+	}
 
-    public String getDirector() { return director; }
-    public void setDirector(String director) { this.director = director; }
+	public void setImageFilename(String imageFilename) {
+		this.imageFilename = imageFilename;
+	}
 
-    public Integer getReleaseYear() { return releaseYear; }
-    public void setReleaseYear(Integer releaseYear) { this.releaseYear = releaseYear; }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public Integer getRating() { return rating; }
-    public void setRating(Integer rating) { this.rating = rating; }
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+	public String getMovieTitle() {
+		return movieTitle;
+	}
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+	public void setMovieTitle(String movieTitle) {
+		this.movieTitle = movieTitle;
+	}
+
+	public String getDirector() {
+		return director;
+	}
+
+	public void setDirector(String director) {
+		this.director = director;
+	}
+
+	public Integer getReleaseYear() {
+		return releaseYear;
+	}
+
+	public void setReleaseYear(Integer releaseYear) {
+		this.releaseYear = releaseYear;
+	}
+
+	public Integer getRating() {
+		return rating;
+	}
+
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	public Set<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<Tag> tags) {
+		this.tags = tags;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

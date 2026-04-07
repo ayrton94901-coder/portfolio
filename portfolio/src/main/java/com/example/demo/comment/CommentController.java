@@ -15,37 +15,37 @@ import jakarta.validation.Valid;
 @Controller
 public class CommentController {
 
-    private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+	private final CommentRepository commentRepository;
+	private final PostRepository postRepository;
 
-    public CommentController(CommentRepository commentRepository, PostRepository postRepository) {
-        this.commentRepository = commentRepository;
-        this.postRepository = postRepository;
-    }
+	public CommentController(CommentRepository commentRepository, PostRepository postRepository) {
+		this.commentRepository = commentRepository;
+		this.postRepository = postRepository;
+	}
 
-    @PostMapping("/posts/{postId}/comments")
-    public String create(@PathVariable Long postId,
-                         @Valid CommentForm commentForm,
-                         BindingResult result,
-                         @AuthenticationPrincipal User user) {
+	@PostMapping("/posts/{postId}/comments")
+	public String create(@PathVariable Long postId, @Valid CommentForm commentForm, BindingResult result,
+			@AuthenticationPrincipal User user) {
 
-        if (user == null) return "redirect:/login";
+		if (user == null)
+			return "redirect:/login";
 
-        Post post = postRepository.findById(postId).orElse(null);
-        if (post == null) return "redirect:/posts";
+		Post post = postRepository.findById(postId).orElse(null);
+		if (post == null)
+			return "redirect:/posts";
 
-        if (result.hasErrors()) {
-            // いったん簡単に：エラーでも詳細へ戻す（表示は次のステップで）
-            return "redirect:/posts/" + postId;
-        }
+		if (result.hasErrors()) {
+			// いったん簡単に：エラーでも詳細へ戻す（表示は次のステップで）
+			return "redirect:/posts/" + postId;
+		}
 
-        Comment c = new Comment();
-        c.setContent(commentForm.getContent());
-        c.setPost(post);
-        c.setUser(user);
+		Comment c = new Comment();
+		c.setContent(commentForm.getContent());
+		c.setPost(post);
+		c.setUser(user);
 
-        commentRepository.save(c);
+		commentRepository.save(c);
 
-        return "redirect:/posts/" + postId;
-    }
+		return "redirect:/posts/" + postId;
+	}
 }

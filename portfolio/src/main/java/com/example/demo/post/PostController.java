@@ -64,10 +64,7 @@ public class PostController {
 		}
 
 		model.addAttribute("posts", posts);
-		System.out.println("posts.userNullCount=" + posts.stream().filter(p -> p.getUser() == null).count());
-		System.out.println("posts.size=" + posts.size());
 		System.out.println("posts.nullCount=" + posts.stream().filter(x -> x == null).count());
-		System.out.println("tag=" + tag + ", keyword=" + keyword);
 		model.addAttribute("keyword", keyword);
 		model.addAttribute("tag", tag);
 

@@ -5,7 +5,7 @@
 	<!-- 通常ページ用 -->
 	<nav th:fragment="appHeader(keyword)" class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
 		<div class="container app-container">
-			<a class="navbar-brand" th:href="@{/posts}">CineShare</a>
+			<a class="navbar-brand" th:href="@{/posts}">Cinema Link</a>
 
 			<!-- 検索（必要な画面だけ表示） -->
 			<form class="d-none d-lg-flex flex-grow-1 mx-lg-4" th:if="${keyword != null}" th:action="@{/posts}"
@@ -38,7 +38,7 @@
 	<!-- 認証ページ用（ログイン/新規登録）: ロゴだけ -->
 	<nav th:fragment="authHeader" class="navbar bg-white border-bottom sticky-top">
 		<div class="container app-container">
-			<a class="navbar-brand" th:href="@{/posts}">CineShare</a>
+			<a class="navbar-brand" th:href="@{/posts}">Cinema Link</a>
 		</div>
 	</nav>
 </body>
